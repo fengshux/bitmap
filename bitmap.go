@@ -1,9 +1,8 @@
 package bitmap
 
 
-
 import (
-	"math"
+	"fmt"
 )
 
 
@@ -35,9 +34,9 @@ func (b *BitMap) Set(offset uint64) {
 
 	b.checkOffset(offset)
 	index , bit := indexAndOverbit(offset)
-	count := powUint64(2, bit)
+	count := uint64(1 << bit)
 
-	b.store[index] = store[index] | count
+	b.store[index] = b.store[index] | count
 }
 
 // set 0 on the offset bit.
@@ -46,8 +45,8 @@ func (b *BitMap) Clear(offset uint64) {
 
 	b.checkOffset(offset)
 	index , bit := indexAndOverbit(offset)
-	count := ^powUint64(2, bit)
-	b.store[index] = store[index] & count	
+	count := ^uint64(1 << bit)
+	b.store[index] = b.store[index] & count	
 
 }
 
@@ -57,7 +56,7 @@ func (b *BitMap) Get(offset uint64) int {
 
 	b.checkOffset(offset)
 	index , bit := indexAndOverbit(offset)
-	count := powUint64(2, bit)
+	count := uint64(1 << bit)
 	val := b.store[index] & count
 
 	if val == 0 {
@@ -68,16 +67,11 @@ func (b *BitMap) Get(offset uint64) int {
 
 func (b *BitMap)checkOffset( offset uint64 ) {
 	if offset > b.size {
-		panic("BitMap overflow: offset ", offset, "bigger than size", b.size)
+		panic(fmt.Sprintf("BitMap overflow: offset %d bigger than size %d", offset, b.size))
 	}
 }
 
 
-func indexAndOverbit(offset uint64) (index, bit int64) {
+func indexAndOverbit(offset uint64) (index, bit uint64) {
 	return offset / 64, offset % 64
-}  
-
-
-func powUint64(x, y uint64) uint64 {	
-	return uint64(math.Pow(float64(x), float64(y)))
 }
