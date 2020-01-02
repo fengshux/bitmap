@@ -1,11 +1,8 @@
 package bitmap
 
-
 import (
 	"fmt"
 )
-
-
 
 type BitMap struct {
 	store []uint64
